@@ -2,7 +2,7 @@
 
 An AI triage system for a software company's support team, built around a fictional product called Lumora Cloud. For each incoming ticket it sets the category and priority, spots angry customers, and either answers from a help-article knowledge base (naming the article it used) or escalates the ticket to a human with the reason.
 
-**Live demo:** ADD-YOUR-RENDER-LINK-HERE (login required, runs in demo mode, may take about a minute to wake up)
+**Live demo:** https://supportops-copilot-yy34.onrender.com (login required, runs in demo mode, may take about a minute to wake up)
 
 ## How it works
 
