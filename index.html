@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SupportOps Copilot</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 0; background: #f4f6f8; color: #1f2933; }
+  header { background: #1f3a5f; color: #fff; padding: 16px 24px; }
+  header h1 { margin: 0; font-size: 22px; }
+  header p { margin: 4px 0 0; font-size: 13px; opacity: 0.85; }
+  main { max-width: 1000px; margin: 0 auto; padding: 20px; }
+  section { background: #fff; border-radius: 8px; padding: 16px 20px; margin-bottom: 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  h2 { margin-top: 0; font-size: 17px; }
+  .cards { display: flex; gap: 12px; flex-wrap: wrap; }
+  .card { flex: 1; min-width: 130px; background: #f4f6f8; border-radius: 6px; padding: 12px; }
+  .card b { display: block; font-size: 24px; }
+  .card span { font-size: 12px; color: #52606d; }
+  textarea { width: 100%; box-sizing: border-box; height: 90px; padding: 8px; font-size: 14px; }
+  button { background: #1f3a5f; color: #fff; border: 0; padding: 8px 16px; border-radius: 5px; cursor: pointer; margin-top: 8px; }
+  button.light { background: #d9e2ec; color: #1f2933; }
+  .examples { margin-top: 8px; font-size: 13px; }
+  .examples a { cursor: pointer; color: #1f3a5f; text-decoration: underline; margin-right: 12px; }
+  .result { margin-top: 12px; padding: 12px; border-radius: 6px; font-size: 14px; }
+  .result.auto { background: #e3f9e5; }
+  .result.esc { background: #fff3c4; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 12px; margin-right: 4px; background: #d9e2ec; }
+  .urgent { background: #ffbdbd; } .high { background: #ffe3b3; } .medium { background: #fff3c4; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #e4e7eb; vertical-align: top; }
+  th { background: #f4f6f8; }
+  .scroll { overflow-x: auto; }
+</style>
+</head>
+<body>
+<header>
+  <h1>SupportOps Copilot</h1>
+  <p>AI ticket triage for Lumora Cloud: answers from the knowledge base, escalates what it cannot handle. <span id="mode"></span></p>
+</header>
+<main>
+  <section>
+    <h2>Dashboard</h2>
+    <div class="cards">
+      <div class="card"><b id="total">0</b><span>Tickets handled</span></div>
+      <div class="card"><b id="auto">0</b><span>Auto-answered</span></div>
+      <div class="card"><b id="esc">0</b><span>Escalated to a human</span></div>
+      <div class="card"><b id="rate">0%</b><span>Auto-answer rate</span></div>
+    </div>
+    <p id="cats" style="font-size:13px">By category: none yet</p>
+    <p id="pris" style="font-size:13px">By priority: none yet</p>
+  </section>
+
+  <section>
+    <h2>Submit a ticket</h2>
+    <textarea id="text" placeholder="Type a customer message, e.g. How do I download my invoice?"></textarea>
+    <div>
+      <button onclick="send()">Triage ticket</button>
+      <button class="light" onclick="document.getElementById('text').value='';document.getElementById('result').innerHTML=''">Clear</button>
+    </div>
+    <div class="examples">Try:
+      <a onclick="ex(this)">How do I reset my password?</a>
+      <a onclick="ex(this)">I was charged twice and I want a refund!!</a>
+      <a onclick="ex(this)">Someone hacked our account, urgent</a>
+      <a onclick="ex(this)">Do you have a dark mode?</a>
+    </div>
+    <div id="result"></div>
+  </section>
+
+  <section>
+    <h2>Ticket history <a href="/export.csv" style="font-size:13px">Export CSV</a></h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Time</th><th>Source</th><th>Ticket</th><th>Category</th><th>Priority</th><th>Status</th><th>Confidence</th></tr></thead>
+        <tbody id="rows"><tr><td colspan="7">No tickets yet.</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<script>
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+    return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c];
+  });
+}
+function ex(el) { document.getElementById("text").value = el.textContent; }
+function pairs(obj) {
+  var keys = Object.keys(obj);
+  if (!keys.length) return "none yet";
+  return keys.map(function (k) { return esc(k) + " " + obj[k]; }).join(", ");
+}
+
+async function send() {
+  var text = document.getElementById("text").value;
+  var box = document.getElementById("result");
+  box.innerHTML = "Working...";
+  var res = await fetch("/tickets", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({text: text})
+  });
+  var data = await res.json();
+  if (!res.ok) { box.innerHTML = '<div class="result esc">' + esc(data.detail) + "</div>"; return; }
+  var badges = '<span class="badge">' + esc(data.category) + '</span>' +
+    '<span class="badge ' + esc(data.priority) + '">priority: ' + esc(data.priority) + '</span>' +
+    (data.angry ? '<span class="badge urgent">angry customer</span>' : "") +
+    '<span class="badge">confidence ' + esc(data.confidence) + '</span>';
+  if (data.status === "auto_answered") {
+    box.innerHTML = '<div class="result auto"><b>Answered automatically</b><br>' + badges +
+      '<p>' + esc(data.answer) + '</p><small>Source: ' + esc(data.source) + '</small></div>';
+  } else {
+    box.innerHTML = '<div class="result esc"><b>Escalated to a human</b><br>' + badges +
+      '<p>Reason: ' + esc(data.reasons.join("; ")) + '</p></div>';
+  }
+  refresh();
+}
+
+async function refresh() {
+  try {
+    var s = await (await fetch("/stats")).json();
+    document.getElementById("total").textContent = s.total;
+    document.getElementById("auto").textContent = s.auto_answered;
+    document.getElementById("esc").textContent = s.escalated;
+    document.getElementById("rate").textContent = s.auto_rate + "%";
+    document.getElementById("cats").innerHTML = "By category: " + pairs(s.by_category);
+    document.getElementById("pris").innerHTML = "By priority: " + pairs(s.by_priority);
+
+    var m = await (await fetch("/status")).json();
+    document.getElementById("mode").textContent = m.mode === "mock" ? "(Demo mode: no Gemini requests)" : "";
+
+    var t = await (await fetch("/tickets")).json();
+    var body = document.getElementById("rows");
+    if (!t.length) { body.innerHTML = '<tr><td colspan="7">No tickets yet.</td></tr>'; return; }
+    body.innerHTML = t.map(function (r) {
+      return "<tr><td>" + esc(r.created_at) + "</td><td>" + esc(r.source) + "</td><td>" +
+        esc(r.text.slice(0, 80)) + "</td><td>" + esc(r.category) + "</td><td>" +
+        esc(r.priority) + "</td><td>" + esc(r.status) + "</td><td>" + esc(r.confidence) + "</td></tr>";
+    }).join("");
+  } catch (e) { /* keep the old numbers if a refresh fails */ }
+}
+refresh();
+setInterval(refresh, 3000);
+</script>
+</body>
+</html>

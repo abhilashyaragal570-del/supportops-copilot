@@ -1,0 +1,74 @@
+[
+  {
+    "id": "pricing-plans",
+    "title": "Pricing and plans",
+    "category": "billing",
+    "content": "Lumora Cloud has three plans. Free: up to 5 members and 3 projects, no API access. Pro: $12 per user per month, unlimited projects, API access and integrations. Business: $24 per user per month, everything in Pro plus single sign-on, audit logs and priority support. Paying yearly gives a 20 percent discount on Pro and Business."
+  },
+  {
+    "id": "invoices",
+    "title": "Finding and downloading invoices",
+    "category": "billing",
+    "content": "Admins can find every invoice under Settings > Billing > Invoice history. Click an invoice to download it as a PDF. Invoices are also emailed to the billing contact on the day of each payment. To change the billing contact or add a company name or tax number to future invoices, edit the details under Settings > Billing > Billing details."
+  },
+  {
+    "id": "refunds",
+    "title": "Refund policy",
+    "category": "billing",
+    "content": "Yearly plans can be refunded in full within 14 days of purchase or renewal. Monthly plans are not refunded for a partial month, but you can cancel at any time to stop the next payment. Approved refunds return to the original payment method in 5 to 10 business days. All refund requests are reviewed and approved by the billing team."
+  },
+  {
+    "id": "change-plan",
+    "title": "Upgrading or downgrading your plan",
+    "category": "billing",
+    "content": "Admins can change plans under Settings > Billing > Change plan. Upgrades start immediately and you pay only the difference for the rest of the billing period. Downgrades take effect at the end of the current billing period. If a downgrade would put you over the limits of the new plan, for example more than 5 members on Free, you will be asked to remove members or projects first."
+  },
+  {
+    "id": "cancel-subscription",
+    "title": "Cancelling your subscription",
+    "category": "billing",
+    "content": "Admins can cancel under Settings > Billing > Cancel subscription. You keep full access until the end of the period you already paid for. After that, the workspace moves to the Free plan. Your data is kept for 30 days after cancellation, and you can export it or reactivate the plan during that time."
+  },
+  {
+    "id": "reset-password",
+    "title": "Resetting your password",
+    "category": "account_access",
+    "content": "On the login page, click Forgot password and enter your work email. You will receive a reset link that is valid for 30 minutes. If the email does not arrive, check your spam folder and make sure you used the same address you signed up with. Accounts that sign in through single sign-on must reset their password with their company identity provider, not with Lumora."
+  },
+  {
+    "id": "two-factor",
+    "title": "Two-factor authentication",
+    "category": "account_access",
+    "content": "Turn on two-factor authentication under Profile > Security. You can use any authenticator app. When you turn it on, you receive 10 backup codes, so save them somewhere safe. If you lose your device, sign in with a backup code. If you have no backup codes, support must verify your identity before turning off two-factor, and this is handled by a human agent."
+  },
+  {
+    "id": "single-sign-on",
+    "title": "Single sign-on (SSO)",
+    "category": "account_access",
+    "content": "Single sign-on with SAML is available on the Business plan only. A workspace admin sets it up under Settings > Security > Single sign-on by entering the details from the company identity provider. Once it is on, members sign in with their company account. Admins can keep one password-based owner account as a backup."
+  },
+  {
+    "id": "invite-members",
+    "title": "Inviting and removing members",
+    "category": "account_access",
+    "content": "Admins invite people under Settings > Members > Invite. Enter their email addresses and choose a role: Admin, Member or Guest. Each new Admin or Member adds a paid seat, charged pro rata for the rest of the billing period. Guests are free on paid plans. Removing a member frees the seat at the next billing period."
+  },
+  {
+    "id": "integrations",
+    "title": "Connecting integrations",
+    "category": "integrations",
+    "content": "Lumora Cloud integrates with Slack, Google Drive, GitHub and Jira. Connect them under Settings > Integrations and click Connect next to the app. Integrations are available on Pro and Business plans. If an integration stops working, disconnect it and connect it again to refresh the permissions. If it still fails after that, send us the name of the app and the time the problem started."
+  },
+  {
+    "id": "data-export",
+    "title": "Exporting your data",
+    "category": "data_export",
+    "content": "Workspace admins can export all projects and tasks under Settings > Workspace > Export data. Choose CSV or JSON. The export is prepared within about an hour and a download link is emailed to you. The link is valid for 7 days. Members who are not admins can export a single project from the project menu."
+  },
+  {
+    "id": "api-limits",
+    "title": "API access and rate limits",
+    "category": "api",
+    "content": "The API is available on Pro and Business plans. Pro allows 100 requests per minute and Business allows 500 requests per minute. When you go over the limit, the API returns status 429 and a Retry-After header telling you how many seconds to wait. Create and revoke API keys under Settings > Developer. Never share an API key or put it in public code."
+  }
+]
